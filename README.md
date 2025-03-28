@@ -1,6 +1,9 @@
 # Self-Supervised-Learning-for-Image-Captioning
 # Self-Supervised Learning for Image Captioning
 
+![image](https://github.com/user-attachments/assets/fb807d85-b8b2-43a1-90ea-5c191cafe23c)
+
+
 ## Overview
 This repository implements a **Self-Supervised Learning** approach for **Image Captioning** using deep learning techniques. The model learns meaningful visual representations without the need for human-labeled captions, leveraging self-supervised pretraining followed by fine-tuning on an image captioning dataset.
 
