@@ -10,6 +10,9 @@ This repository implements a **Self-Supervised Learning** approach for **Image C
 ## Problem Statement
 Originally, the existing solutions utilised fully supervised trained models for the part of image feature extraction. However, our experiments showed that such a complex task as image captioning requires higher level of generalisation than usual models can provide. This problem could be addressed with using self-supervised learning methods, that recently showed their ability to generalise better. In order to explore this property of SSL approaches, we proposed and explored two solutions for the image captioning using two different self-supervised learning models, based on Jigsaw Puzzle solving and SimCLR, as a pre-text task.
 
+## Results
+For the sake of supervised and self-supervised pre-text tasks comparison, we provide the results of their comprehensive testing on the same downstream task, calculating a BLEU score and validation loss. Our proposed solution with SimCLR model used for image feature extraction achieved the following results: BLEU-1: 0.575, BLEU-2: 0.360, BLEU-3: 0.266, BLEU-4: 0.145, and validation loss of 3.415. These outcomes can be considered as competitive ones with the fully supervised solutions. Along with the code, we also provide pre-trained models for image captionig task, which can be used for any random image.
+
 ## Features
 - Self-Supervised pretraining on unlabeled image data.
 - Transformer-based Image Captioning Model.
@@ -32,6 +35,9 @@ pip install -r requirements.txt
 1. **Pretraining Dataset**: Any large-scale unlabeled image dataset (e.g., ImageNet, OpenImages).
 2. **Fine-tuning Dataset**: MS COCO, Flickr8k, or any image-caption dataset.
 3. Download and preprocess datasets as per instructions in `data/README.md`.
+4. Datasets
+The dataset used for training the Jigsaw Puzzle solving pre-text task is MSCOCO unlabeled 2017,from https://cocodataset.org, can be downoaded here MSCOCO unlabeled 2017
+The dataset used for training the Caption generator model downstream task is Flickr8k, which can be downoaded from the shared folder Flickr8k Dataset
 
 ## Model Architecture
 The pipeline consists of:
@@ -43,13 +49,53 @@ The pipeline consists of:
    - Transformer or LSTM-based Decoder with Attention
 
 ## Training
-```bash
-# Pretrain the model using self-supervised learning
-python pretrain.py --config configs/pretrain.yaml
+Image Captioning with the Contrastive Learning Framework
+To train a model from scratch:
+The root folder contains the code and instructions of using SimCLR model as a pretext task for extracting features for the image captioning downstream task. For each of the foolowing step you will need to provide a correct path to a chosen dataset:
 
-# Fine-tune the image captioning model
-python train.py --config configs/train.yaml
-```
+Run "1_data_preprocessor.py" file to extract visual features from the images and textual descriptions from the descriptions in the chosen dataset. They will be put in the "features.pkl" file and "descriptions.txt" file respectively.
+Run "2_train_IC_model.py" file to train the caption generator model with extracted in the previous step features. The trained model will be saved in the same root directory.
+Run "3_BLEU.py" file to evaluate the BLEU score of the pre-trained model.
+Run "4_tokenizer.py" to create a "tokenizer.pkl" file for further encoding generated words for the model while generating a sequence,
+Run "5_test.py" file to generate a caption for any image.
+To use a pre-trained model and files:
+Download the pre-trained model, extracted features and descriptions, and tokenizer from the shared folder Image_Captioning with_SimCLR and put them all into a "Pre-trained/" folder (does not exist by default).
+Run "3_BLEU.py" file to evaluate the BLEU score of the pre-trained model. (Also provide a correct path to a chosen dataset).
+Run "5_test.py" file to generate a caption for any image.(An image should be in the same code folder, or the full path to it should be provided).
+
+## How to Run the Code
+
+### Pretext Task
+1. **Create HDF5 Dataset**: Use `to_hdf5.py` to convert images into HDF5 format by specifying the image path and desired image size.
+2. **Generate Permutations**: Run `maximal_hamming.py` to create a set of permutations for Jigsaw puzzle solving. This script will generate a text file containing the permutations.
+3. **Configure Main Script**: In `main.py`, set the dataset path and the permutation file path, specifying the number of permutations (`max_hamming_set`) to be used.
+4. **Adjust Image Size** (if needed): If using a different image size, update the settings in dataset creation, `datagenerator.py` (image_size parameter), and `image_transform.py` (crop size, patch size, and tile size).
+
+### Data Processing
+- **`DataGenerator.py`**: Generates Jigsaw puzzle patches using `image_processing.py`.
+- **`image_preprocessing/`**: Contains `image_transform.py`, which handles Jigsaw preprocessing, cropping, and color jittering.
+
+### Downstream Task: Image Captioning
+1. **Feature Extraction**: Run `Jigsaw_feature_extraction.py`, load the trained model, specify the dataset directory, and choose one of two methods:
+   - **Full Architecture**: Extracts features from the last dense layer before softmax.
+   - **Single Network**: Loads a ResNet50 with trained weights and extracts features from the GAP layer (not recommended).
+2. **Generate Captions**:
+   - Run `jigsaw_captions.py` to extract textual descriptions into `description.txt`.
+3. **Train Captioning Model**:
+   - Run `Jigsaw_IC_model.py`, specifying the extracted features and descriptions file.
+4. **Prepare Tokenizer**:
+   - Run `Jigsaw_tokenizer.py` to create a `tokenizer.pkl` file for encoding words during caption generation.
+5. **Evaluate Model Performance**:
+   - Run `Jigsaw_test_bleu.py` to compute BLEU scores.
+   - Run `Jigsaw_test_images.py` to test the trained model on real images (specify the image location and trained captioning model).
+
+## Pre-trained Models
+- **Jigsaw Puzzle Solver**: ResNet50-based model with **67% accuracy** on the pretext task.
+- **Image Captioning Model**: Trained using Jigsaw-extracted features.
+
+
+
+
 
 ## Evaluation
 ```bash
