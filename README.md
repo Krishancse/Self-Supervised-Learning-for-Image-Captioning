@@ -108,7 +108,6 @@ python infer.py --image-path path/to/image.jpg --model-path checkpoints/best_mod
 - [BYOL](https://arxiv.org/abs/2006.07733)
 - [Transformer](https://arxiv.org/abs/1706.03762)
 - [Related Research](https://arxiv.org/abs/1603.09246)
-- [GitHub Repository](https://github.com/Jeremalloch/Semisupervised_Image_Classifier)
 
 ## Contributing
 Contributions are welcome!
