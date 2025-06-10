@@ -1,4 +1,4 @@
-# Self-Supervised-Learning-for-Image-Captioning
+# SelfCap
 # Self-Supervised Learning for Image Captioning
 
 ![image](https://github.com/user-attachments/assets/fb807d85-b8b2-43a1-90ea-5c191cafe23c)
